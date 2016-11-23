@@ -11,9 +11,15 @@
       </div>
       <div id="navbar" class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
-          <li class="<%= print_if_controller("active","map") %>"><a href="/">Home</a></li>
-          <li><a href="https://github.com/michaeltrimm/mapbox-demo" target="_blank">Github</a></li>
-          <li><a href="mailto:michael@michaeltrimm.com" target="_blank">Email</a></li>
+          <li class="<%= print_if_controller_action("active","map","index") %>"><a href="/">Home</a></li>
+          <% if user_signed_in? %>
+            <li class="<%= print_if_controller_action("active","map","new") %>">
+              <%= link_to "New Map", new_map_path %>
+            </li>
+          <% else %>
+            <li><a href="https://github.com/michaeltrimm/mapbox-demo" target="_blank">Github</a></li>
+            <li><a href="mailto:michael@michaeltrimm.com" target="_blank">Email</a></li>
+          <% end %>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <% if user_signed_in? %>
