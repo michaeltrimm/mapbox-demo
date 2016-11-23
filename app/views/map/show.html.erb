@@ -29,21 +29,36 @@
       zoom: 6
   });
   
-  map.on('load', function () {
-    map.addSource('markers', {
-      'type': 'geojson',
-      'data': '/map/#{@map.id.to_s}/markers.json'
-    });
-    map.addLayer({
-      'id': 'marker-layer',
-      'type': 'fill',
-      'source': 'states',
-      'paint': {
-        'fill-color': 'rgba(200, 100, 240, 0.4)',
-        'fill-outline-color': 'rgba(200, 100, 240, 1)'
-      }
-    });
-  });
+  // map.on('load', function () {
+  //   map.addSource('markers', {
+  //     'type': 'geojson',
+  //     'data': '/map/#{@map.id.to_s}/markers.json'
+  //   });
+  //   map.addLayer({
+  //     'id': 'marker-layer',
+  //     'type': 'fill',
+  //     'source': 'states',
+  //     'paint': {
+  //       'fill-color': 'rgba(200, 100, 240, 0.4)',
+  //       'fill-outline-color': 'rgba(200, 100, 240, 1)'
+  //     }
+  //   });
+  // });
+  
+  var markerHeight = 0, 
+      markerRadius = 0, 
+      linearOffset = 0;
+      
+  var popupOffsets = {
+   'top': [0, 0],
+   'top-left': [0,0],
+   'top-right': [0,0],
+   'bottom': [0, -markerHeight],
+   'bottom-left': [linearOffset, (markerHeight - markerRadius + linearOffset) * -1],
+   'bottom-right': [-linearOffset, (markerHeight - markerRadius + linearOffset) * -1],
+   'left': [markerRadius, (markerHeight - markerRadius) * -1],
+   'right': [-markerRadius, (markerHeight - markerRadius) * -1]
+   };
   
   map.on('click', function (e) {
     ll = e.lngLat;
@@ -54,6 +69,11 @@
              "<td>Latitude: <code>" + ll.lat.toString().substring(0,10) +"</code> Longitude: <code>"+ ll.lng.toString().substring(0,10) +"</code></td>\n" +
            "</tr>\n";
     $("#historyRows").prepend(html);
+    
+    new mapboxgl.Popup({offset:popupOffsets})
+      .setLngLat(ll)
+      .setHTML(ll.lat.toString().substring(0,10) +", "+ ll.lng.toString().substring(0,10))
+      .addTo(map);
     
   });
   
