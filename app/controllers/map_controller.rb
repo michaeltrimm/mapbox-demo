@@ -8,19 +8,11 @@ class MapController < ApplicationController
   end
   
   def create
-    upper_right = {
-      "latitude" => BigDecimal.new(params[:upper_right_latitude]),
-      "longitude" => BigDecimal.new(params[:upper_right_longitude])
-    }
-    
-    lower_left = {
-      "latitude" => BigDecimal.new(params[:lower_left_latitude]),
-      "longitude" => BigDecimal.new(params[:lower_left_longitude])
-    }
+    bounds = get_bounds
     
     map = Map.new
-    map.upper_right = upper_right
-    map.lower_left = lower_left
+    map.upper_right = bounds[:ne]
+    map.lower_left = bounds[:sw]
     map.name = params[:name]
     map.user = current_user
     
@@ -39,19 +31,28 @@ class MapController < ApplicationController
   end
   
   def edit
-    
+    @map = get_user_map_by_id(params[:id])
   end
   
   def show 
-    @map = Map.find(params[:id])
-    if @map.user != current_user
-      flash[:error] = "You do not own this map."
-      redirect_to root_path
-    end
+    @map = get_user_map_by_id(params[:id])
   end
   
   def update
+    bounds = get_bounds
     
+    map = get_user_map_by_id(params[:id])
+    map.name = params[:name]
+    map.upper_right = bounds[:ne]
+    map.lower_left = bounds[:sw]
+    
+    if map.save!
+      flash[:success] = "Updated map #{map.name}!"
+      redirect_to map_path(map)
+    else
+      flash[:error] = "Unable to save map #{map.name}."
+      redirect_to edit_map_path(map)
+    end
   end
   
   def destroy
@@ -71,6 +72,30 @@ class MapController < ApplicationController
       end
     end
     redirect_to root_path
+  end
+  
+  private
+  
+  def get_user_map_by_id id
+    map = Map.find(id)
+    if map.user != current_user
+      flash[:error] = "You do not own this map."
+      redirect_to root_path
+    end
+    return map
+  end
+  
+  def get_bounds
+    upper_right = {
+      "latitude" => BigDecimal.new(params[:upper_right_latitude]),
+      "longitude" => BigDecimal.new(params[:upper_right_longitude])
+    }
+    
+    lower_left = {
+      "latitude" => BigDecimal.new(params[:lower_left_latitude]),
+      "longitude" => BigDecimal.new(params[:lower_left_longitude])
+    }
+    return {ne: upper_right, sw: lower_left}
   end
   
 end

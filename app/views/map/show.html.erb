@@ -4,23 +4,60 @@
 <div class="container">
   <h1>Viewing Map <small><em><%= @map.name %></em></small></h1>
   <hr>
-  <div id="map" style="height: 550px;"></div>
+  <div class="col-md-12">
+    <div class="col-md-7"><div id="map" style="height: 550px;"></div></div>
+    <div class="col-md-5">
+      <table id="history" class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Coordinates Clicked</th>
+          </tr>
+        </thead>
+        <tbody id="historyRows"></tbody>
+      </table>
+    </div>
+  </div>
   <script type="text/javascript">
   mapboxgl.accessToken = '<%= ENV['MAPBOXGL_ACCESSTOKEN'] %>';
-  
-  var sw = new mapboxgl.LngLat(<%=@map.lower_left[:latitude].to_s %>, <%= @map.lower_left[:longitude].to_s %>);
-  var ne = new mapboxgl.LngLat(<%=@map.upper_right[:latitude].to_s %>, <%= @map.upper_right[:longitude].to_s %>);
-  var llb = new mapboxgl.LngLatBounds(sw, ne);
   
   var map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/streets-v9',
-      center: [<%= @map.center.map{|key,val| val }.join(", ") %>],
+      center: [<%= @map.center.map{|key,val| val.to_s[0,6] }.join(", ") %>],
       interactive: true,
-      hash: true,
-      zoom: 4,
-      around: llb
+      zoom: 6
   });
+  
+  map.on('load', function () {
+    map.addSource('markers', {
+      'type': 'geojson',
+      'data': '/map/#{@map.id.to_s}/markers.json'
+    });
+    map.addLayer({
+      'id': 'marker-layer',
+      'type': 'fill',
+      'source': 'states',
+      'paint': {
+        'fill-color': 'rgba(200, 100, 240, 0.4)',
+        'fill-outline-color': 'rgba(200, 100, 240, 1)'
+      }
+    });
+  });
+  
+  map.on('click', function (e) {
+    ll = e.lngLat;
+    
+    var currentdate = new Date(); 
+    html = "<tr>\n" +
+             "<td>"+ currentdate.getHours() +":"+ currentdate.getMinutes() +":"+ currentdate.getSeconds() +"</td>\n" +
+             "<td>Latitude: <code>" + ll.lat.toString().substring(0,10) +"</code> Longitude: <code>"+ ll.lng.toString().substring(0,10) +"</code></td>\n" +
+           "</tr>\n";
+    $("#historyRows").prepend(html);
+    
+  });
+  
+  
   </script>
 </div>
 <style type="text/css">

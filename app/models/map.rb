@@ -14,7 +14,6 @@ class Map
     z = 0.0
     
     [self.upper_right, self.lower_left].each do |pair|
-      logger.debug pair.inspect
       _lat = pair[:latitude].to_f * Math::PI / 180
       _lon = pair[:longitude].to_f * Math::PI / 180
       
@@ -37,30 +36,27 @@ class Map
     end
     
     logger.debug "Before /="
-    logger.debug x.to_s.inspect
-    logger.debug y.to_s.inspect
-    logger.debug z.to_s.inspect
+    debug = {:x => x, :y => y, :z => z}
+    logger.debug debug.inspect
     
     x /= 2
     y /= 2
     z /= 2
     
     logger.debug "After /="
-    logger.debug x.to_s.inspect
-    logger.debug y.to_s.inspect
-    logger.debug z.to_s.inspect
+    debug = {:x => x, :y => y, :z => z}
+    logger.debug debug.inspect
     
     lon = Math.atan2(y, x)
     hyp = Math.hypot(x,y)
     lat = Math.atan2(z, hyp)
     
-    logger.debug lon.inspect
-    logger.debug hyp.inspect
-    logger.debug lat.inspect
+    debug = {:lon => lon, :hyp => hyp, :lat => lat }
+    logger.debug debug.inspect
     
     result = {
-      :latitude => lat * 180 / Math::PI,
-      :longitude => lon * 180 / Math::PI
+      :longitude => lon * 180 / Math::PI,
+      :latitude => lat * 180 / Math::PI
     }
     
     logger.debug result
