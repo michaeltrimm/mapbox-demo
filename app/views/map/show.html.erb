@@ -1,0 +1,19 @@
+<link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.css" rel="stylesheet" />
+
+<div class="container">
+  
+  <h1>Viewing Map <small><em><%= @map.name %></em></small></h1>
+  <%= @map.inspect %>
+  
+  <div id="map"></div>
+  <script type="text/javascript">
+  mapboxgl.accessToken = '<%= ENV['MAPBOXGL_ACCESSTOKEN'] %>';
+  var map = new mapboxgl.Map({
+      container: 'map', // container id
+      style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
+      center: [-74.50, 40], // starting position
+      zoom: 9 // starting zoom
+  });
+  </script>
+</div>
+<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.js"></script>

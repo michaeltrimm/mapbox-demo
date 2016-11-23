@@ -9,6 +9,29 @@ class MapController < ApplicationController
   end
   
   def create
+    upper_right = {
+      "latitude" => BigDecimal.new(params[:upper_right_latitude]),
+      "longitude" => BigDecimal.new(params[:upper_right_longitude])
+    }
+    
+    lower_left = {
+      "latitude" => BigDecimal.new(params[:lower_left_latitude]),
+      "longitude" => BigDecimal.new(params[:lower_left_longitude])
+    }
+    
+    map = Map.new
+    map.upper_right = upper_right
+    map.lower_left = lower_left
+    map.name = params[:name]
+    map.user = current_user
+    
+    if map.save!
+      flash[:success] = "Created new map #{map.name}!"
+      redirect_to map_path(map)
+    else
+      flash[:error] = "Unable to create new map #{map.name}."
+      redirect_to new_map_path
+    end
     
   end
   
@@ -21,9 +44,11 @@ class MapController < ApplicationController
   end
   
   def show 
-    map_id = params[:map_id]
-    map = Map.where(user_id: current_user.id, id: map_id)
-    map.inspect
+    @map = Map.find(params[:id])
+    if @map.user != current_user
+      flash[:error] = "You do not own this map."
+      redirect_to root_path
+    end
   end
   
   def update
@@ -32,12 +57,6 @@ class MapController < ApplicationController
   
   def destroy
     
-  end
-  
-  private
-  
-  def map_params
-    params.require(:map).permit(:upper_right, :lower_left)
   end
   
 end

@@ -1,6 +1,6 @@
 class Map
   include Mongoid::Document
-  has_many :mapmarkers
+  has_many :map_markers
   belongs_to :user
   
   field :name, type: String
