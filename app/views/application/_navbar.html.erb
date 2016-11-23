@@ -11,10 +11,23 @@
       </div>
       <div id="navbar" class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
-          <li class="active"><a href="/">Home</a></li>
+          <li class="<%= print_if_controller("active","map") %>"><a href="/">Home</a></li>
           <li><a href="https://github.com/michaeltrimm/mapbox-demo" target="_blank">Github</a></li>
           <li><a href="mailto:michael@michaeltrimm.com" target="_blank">Email</a></li>
         </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <% if user_signed_in? %>
+            <p class="navbar-text navbar-right">Signed in as <%= link_to current_user.email, edit_user_registration_path, :class => "navbar-link" %> (<%= link_to "Logout", destroy_user_session_path, :confirm => "Are you sure you want to log out?", class: 'navbar-link', :method => :delete %>)</p>
+          <% else %>
+            <li class="<%= print_if_controller_action("active","devise/sessions","new") %>">
+              <%= link_to "Login", new_user_session_path %>
+            </li>
+            <li class="<%= print_if_controller_action("active","devise/registrations","new") %>">
+              <%= link_to "Register", new_user_registration_path %>
+            </li>
+          <% end %>
+        </ul>
       </div><!--/.nav-collapse -->
+      
     </div>
 </nav>
