@@ -1,1 +1,27 @@
 <h1>Maps</h1>
+<table class="table table-hover table-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Coordinates</th>
+      <th>&nbsp;</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% @maps.each do |map| %>
+    <tr>
+      <td><%= map.name %></td>
+      <td>
+        <b>NE</b>: <code><%= map.upper_right[:latitude] %></code>, <code><%= map.upper_right[:longitude] %></code>
+        <br>
+        <b>SW</b>: <code><%= map.lower_left[:latitude] %></code>, <code><%= map.lower_left[:longitude] %></code>
+      </td>
+      <td align="right" width="1%" nowrap="nowrap">
+        <%= link_to 'View', map_path(map), class: 'btn btn-info btn-xs' %>
+        <%= link_to 'Edit', edit_map_path(map), class: 'btn btn-warning btn-xs' %>
+        <%= link_to 'Delete', map_path(map), method: :delete, data: { confirm: "Are you sure you want to delete this map?"}, class: "btn btn-danger btn-xs" %>
+      </td>
+    </tr>
+  <% end%>
+  </tbody>
+</table>

@@ -3,8 +3,7 @@ class MapController < ApplicationController
   
   def index
     
-    maps = Map.all
-    maps.inspect
+    @maps = Map.where(user_id: current_user.id).all
     
   end
   
@@ -56,7 +55,22 @@ class MapController < ApplicationController
   end
   
   def destroy
-    
+    if params[:id].nil?
+      flash[:error] = "No such map to delete."
+    else
+      map = Map.find(params[:id])
+      if map.user == current_user
+        name = map.name
+        if map.destroy!
+          flash[:success] = "Deleted map named #{name}."
+        else
+          flash[:error] = "Unable to delete the map. Check the logs."
+        end
+      else 
+        flash[:error] = "You do not own that map, you cannot delete it."
+      end
+    end
+    redirect_to root_path
   end
   
 end

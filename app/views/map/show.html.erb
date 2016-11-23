@@ -1,19 +1,32 @@
 <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.css" rel="stylesheet" />
+<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.js"></script>
 
 <div class="container">
-  
   <h1>Viewing Map <small><em><%= @map.name %></em></small></h1>
-  <%= @map.inspect %>
-  
-  <div id="map"></div>
+  <hr>
+  <div id="map" style="height: 550px;"></div>
   <script type="text/javascript">
   mapboxgl.accessToken = '<%= ENV['MAPBOXGL_ACCESSTOKEN'] %>';
+  
+  var sw = new mapboxgl.LngLat(<%=@map.lower_left[:latitude].to_s %>, <%= @map.lower_left[:longitude].to_s %>);
+  var ne = new mapboxgl.LngLat(<%=@map.upper_right[:latitude].to_s %>, <%= @map.upper_right[:longitude].to_s %>);
+  var llb = new mapboxgl.LngLatBounds(sw, ne);
+  
   var map = new mapboxgl.Map({
-      container: 'map', // container id
-      style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
-      center: [-74.50, 40], // starting position
-      zoom: 9 // starting zoom
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v9',
+      center: [<%= @map.center.map{|key,val| val }.join(", ") %>],
+      interactive: true,
+      hash: true,
+      zoom: 4,
+      around: llb
   });
   </script>
 </div>
-<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.js"></script>
+<style type="text/css">
+#map {
+  width: 100%;
+  top:0;
+  bottom:0;
+}
+</style>
